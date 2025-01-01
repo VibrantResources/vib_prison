@@ -16,7 +16,7 @@ Config.MainPrison = {
             -- vector4(1762.52, 2596.69, 45.72, 191.92),
             -- vector4(1762.52, 2596.69, 45.72, 191.92),
         },
-        HealthCheckPed = { -- Doctor ped that talks to player on first arrival to prison
+        ArrivalPed = { -- Doctor ped that talks to player on first arrival to prison
             Model = 's_m_m_doctor_01',
             Location = vector4(1628.76, 2504.86, 45.56, 160.1),
         },

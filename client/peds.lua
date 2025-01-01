@@ -4,18 +4,19 @@
 
 function SpawnHealthCheckPed(jailDuration) -- Ped that goes through confirmations when first entering prison with player
     local player = cache.ped
-    local healthCheck = Config.MainPrison.Enteringprison.HealthCheckPed
-    local healthCheckModel = lib.requestModel(healthCheck.Model)
+    local healthCheck = Config.MainPrison.Enteringprison.ArrivalPed
     local playerCoords = GetEntityCoords(player)
     local playerInfo = lib.callback.await('prison:server:GetPlayerInfo', false, player)
 
-    local doctorPed = CreatePed(0, healthCheckModel, healthCheck.Location.x, healthCheck.Location.y, healthCheck.Location.z, healthCheck.Location.w, false, true)
+    local arrivalModel = lib.requestModel(healthCheck.Model)
+    local arrivalPed = CreatePed(0, arrivalModel, healthCheck.Location.x, healthCheck.Location.y, healthCheck.Location.z, healthCheck.Location.w, false, true)
+    SetModelAsNoLongerNeeded(arrivalModel)
 
-    TaskGoStraightToCoord(doctorPed, playerCoords.x, playerCoords.y, playerCoords.z, 1.0, -1, 0.0, 0.0)
+    TaskGoStraightToCoord(arrivalPed, playerCoords.x, playerCoords.y, playerCoords.z, 1.0, -1, 0.0, 0.0)
 
     Wait(3000)
 
-    TaskStartScenarioInPlace(doctorPed, 'WORLD_HUMAN_CLIPBOARD', 0, true)
+    TaskStartScenarioInPlace(arrivalPed, 'WORLD_HUMAN_CLIPBOARD', 0, true)
 
 	lib.alertDialog({
 		header = "Welcome to Boiling Broke Infirmary",
@@ -25,43 +26,45 @@ function SpawnHealthCheckPed(jailDuration) -- Ped that goes through confirmation
 	})
 
     lib.requestAnimDict('mp_cp_welcome_tutthink')
-    TaskPlayAnim(doctorPed, 'mp_cp_welcome_tutthink', 'b_think', 1.0, 1.0, -1, 1, 1, false, false, false)
+    TaskPlayAnim(arrivalPed, 'mp_cp_welcome_tutthink', 'b_think', 1.0, 1.0, -1, 1, 1, false, false, false)
     Wait(2000)
     RemoveAnimDict('mp_cp_welcome_tutthink')
 
     lib.requestAnimDict('random@train_tracks')
-    TaskPlayAnim(doctorPed, 'random@train_tracks', 'idle_e', 1.0, 1.0, -1, 1, 1, false, false, false)
+    TaskPlayAnim(arrivalPed, 'random@train_tracks', 'idle_e', 1.0, 1.0, -1, 1, 1, false, false, false)
     Wait(10000)
     RemoveAnimDict('random@train_tracks')
 
-    SetEntityAsNoLongerNeeded(doctorPed)
+    SetEntityAsNoLongerNeeded(arrivalPed)
     FreezeEntityPosition(cache.ped, false)
 
     Wait(4000)
     
-    DeleteEntity(doctorPed)
+    DeleteEntity(arrivalPed)
 end
 
 function SpawnVisitationRoomPed()
     local visitationRoom = Config.Visitation.VisitationRoom
-    local visitationPedModel = lib.requestModel(Config.Visitation.VisitationPed.Model)
 
-    local visitRoomPed = CreatePed(0, visitationPedModel, visitationRoom.GuardPedLocation, visitationRoom.GuardPedLocation.w, false, true)
+    local visitationModel = lib.requestModel(Config.Visitation.VisitationPed.Model)
+    local visitationPed = CreatePed(0, visitationModel, visitationRoom.GuardPedLocation, visitationRoom.GuardPedLocation.w, false, true)
 
-    exports.ox_target:addSphereZone({
-        coords = vec3(visitationRoom.GuardPedLocation.x, visitationRoom.GuardPedLocation.y, visitationRoom.GuardPedLocation.z),
-        radius = 1.0,
-        debug = Config.GenericStuff.Debug,
-        options = {
-            {
-                label = "Convince Guard",
-                event = 'prison:client:VisitationRequestsMenu',
-                icon = "fa-solid fa-phone",
-                iconColor = "orange",
-                distance = 2,
-            },
+    exports.ox_target:addLocalEntity(visitationPed, {
+        {
+            label = 'Bribe Guard',
+            onSelect = function()
+                lib.notify({
+                    title = 'Good job',
+                    description = "You interacted with the guard",
+                    type = 'success'
+                })
+            end,
+            icon = 'fa-solid fa-box-archive',
+            iconColor = "yellow",
+            distance = 2, 
         },
     })
+    SetModelAsNoLongerNeeded(visitationModel)
 end
 
 -----------

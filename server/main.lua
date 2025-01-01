@@ -187,8 +187,8 @@ lib.callback.register('prison:CheckRemainingDuration', function()
     return jailTime
 end)
 
-lib.callback.register('prison:server:GetInmateData', function()
-    local inmateData = MySQL.Sync.fetchAll('SELECT * FROM `vib_prison`', {})
+lib.callback.register('prison:server:GetAllInmateData', function()
+    local inmateData = MySQL.Sync.fetchAll('SELECT * FROM `vib_prison`')
     
     return inmateData
 end)

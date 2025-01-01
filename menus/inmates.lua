@@ -1,6 +1,6 @@
 RegisterNetEvent('prison:client:InmateMenu', function()
     local player = cache.ped
-    local inmateData = lib.callback.await('prison:server:GetInmateData', false)
+    local inmateData = lib.callback.await('prison:server:GetAllInmateData', false)
     local headerMenu = {}
 
     for _, inmate in pairs(inmateData) do
