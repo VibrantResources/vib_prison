@@ -10,7 +10,7 @@ QBCore = exports["qb-core"]:GetCoreObject()
 
 RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, unJailed)
     local player = QBCore.Functions.GetPlayer(source)
-    local jailTime = player.Functions.GetMetaData('injail')
+    -- local jailTime = player.Functions.GetMetaData('injail')
     
     player.Functions.SetMetaData('injail', jailSentenceDuration)
 
@@ -24,17 +24,7 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
             player.PlayerData.citizenid 
         })
 
-        for index, itemInfo in pairs(json.decode(inmateItems[1].inmate_items)) do
-            if exports.ox_inventory:CanCarryItem(player.PlayerData.source, itemInfo.name, itemInfo.count) then
-                exports.ox_inventory:AddItem(player.PlayerData.source, itemInfo.name, itemInfo.count, itemInfo.metadata)
-            else
-                lib.notify(player.PlayerData.source, {
-                    title = "Attention",
-                    description = "Inventory is full!",
-                    type = 'inform'
-                })
-            end
-        end
+        TriggerEvent('prison:server:ReturnPlayerItems', player.PlayerData.source, json.decode(inmateItems[1].inmate_items))
 
         player.Functions.SetMetaData('injail', 0)
 
@@ -44,7 +34,7 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
         return
     end
 
-    if jailSentenceDuration <= 0 or jailTime <= 0 then
+    if jailSentenceDuration <= 0 then
         if unJailed then
             return
         end
@@ -53,17 +43,7 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
             player.PlayerData.citizenid 
         })
 
-        for index, itemInfo in pairs(json.decode(inmateItems[1].inmate_items)) do
-            if exports.ox_inventory:CanCarryItem(player.PlayerData.source, itemInfo.name, itemInfo.count) then
-                exports.ox_inventory:AddItem(player.PlayerData.source, itemInfo.name, itemInfo.count, itemInfo.metadata)
-            else
-                lib.notify(player.PlayerData.source, {
-                    title = "Attention",
-                    description = "Inventory is full!",
-                    type = 'inform'
-                })
-            end
-        end
+        TriggerEvent('prison:server:ReturnPlayerItems', player.PlayerData.source, json.decode(inmateItems[1].inmate_items))
         player.Functions.SetMetaData('injail', 0)
         
         MySQL.Async.execute('DELETE FROM `vib_prison` WHERE `citizenid` = @citizenid', {
@@ -78,15 +58,15 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
 
     if player.PlayerData.job.name ~= 'unemployed' then
         player.Functions.SetJob('unemployed')
-        lib.notify(src, {
+        lib.notify(source, {
             title = 'Attention',
             description = "You've been fired! Seek employment when you leave again!",
             type = 'error'
         })
     end
 
-    Wait(1000 * 10)
-    TriggerClientEvent('prison:CreateSentenceDuration', src, jailSentenceDuration -1)
+    Wait(60000)
+    TriggerClientEvent('prison:CreateSentenceDuration', player.PlayerData.source, (jailSentenceDuration -1))
 end)
 
 RegisterNetEvent('prison:server:JailPlayer', function(inputData)
@@ -136,9 +116,9 @@ RegisterNetEvent('prison:server:JailPlayer', function(inputData)
 
     exports.ox_inventory:ClearInventory(inputData[1], false)
 
-    MySQL.Async.execute('UPDATE vib_prison SET inmate_items = ? WHERE citizenid = ?', { 
-        json.encode(resolvedJailedPlayerItems), 
-        jailedCitizenId
+    MySQL.Async.execute('UPDATE `vib_prison` SET `inmate_items` = @inmate_items WHERE `citizenid` = @citizenid', {
+        ['@citizenid'] = jailedPlayer.PlayerData.citizenid,
+        ['@inmate_items'] = json.encode(resolvedJailedPlayerItems),
     })
 end)
 
@@ -161,7 +141,6 @@ end
 -------------
 
 lib.callback.register('prison:server:GetPlayerInfo', function(player)
-    local src = source
     local playerInfo = QBCore.Functions.GetPlayer(player)
 
     return playerInfo.PlayerData
@@ -180,8 +159,7 @@ lib.callback.register('prison:server:GetPlayerByCitizenId', function(source, cit
 end)
 
 lib.callback.register('prison:CheckRemainingDuration', function()
-    local src = source
-    local player = QBCore.Functions.GetPlayer(src)
+    local player = QBCore.Functions.GetPlayer(source)
     local jailTime = player.Functions.GetMetaData('injail')
 
     return jailTime

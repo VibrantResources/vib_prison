@@ -12,7 +12,7 @@ inJail = false
 --Events--
 ----------
 
-RegisterNetEvent('prison:client:JailPlayer', function()
+RegisterNetEvent('prison:client:SendToJailInput', function()
     local playerId, player, playerCoords = lib.getClosestPlayer(GetEntityCoords(cache.ped), 2.0, false)
     local distance = playerCoords and #(playerCoords - GetEntityCoords(cache.ped))
 
@@ -52,6 +52,10 @@ RegisterNetEvent('prison:client:JailPlayer', function()
                 max = 20,
             },
         })
+
+		if input == nil then
+			return
+		end
         
         TriggerServerEvent('prison:server:JailPlayer', input)
     -- else
@@ -90,7 +94,6 @@ end)
 
 RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 	local enteringPrison = Config.MainPrison.Enteringprison
-	local prisonClothes = Config.MainPrison.PrisonClothes
 	local randomLocation = nil
 
 	DoScreenFadeOut(500)
@@ -130,9 +133,9 @@ RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 	local playerGender = QBCore.Functions.GetPlayerData().charinfo.gender
 	if playerGender == 0 then
 
-		TriggerEvent('qb-clothing:client:loadOutfit', prisonClothes.Male)
+		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Male)
 	else
-		TriggerEvent('qb-clothing:client:loadOutfit', prisonClothes.Female)
+		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Female)
 	end
 end)
 

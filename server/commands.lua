@@ -1,21 +1,17 @@
 QBCore = exports["qb-core"]:GetCoreObject()
 
-QBCore.Commands.Add('jail', "Jail person", {}, false, function(source)
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
+lib.addCommand('jail', {
+    help = 'Open the Jailing input',
+}, function(source, args, raw)
+    local player = QBCore.Functions.GetPlayer(source)
+    local playerJobType = player.PlayerData.job.type
 
-    if Player.PlayerData.job.type == 'leo' and Player.PlayerData.job.onduty then
-        TriggerClientEvent('prison:client:JailPlayer', src)
-    else
-        lib.notify(src, {
-            title = 'Attention',
-            description = 'You need to be an on duty cop to use this!',
-            type = 'error'
-        })
+    if CheckPlayersJob(source, playerJobType, Config.GenericStuff.PoliceJobType) then
+        TriggerClientEvent('prison:client:SendToJailInput', source)
     end
 end)
 
-QBCore.Commands.Add('unjail', "Unjail person", { { name = 'id', help = "ID of person to unjail" } }, true, function(source, args)
+QBCore.Commands.Add('unjail', "Unjail person", { {name = 'id', help = "ID of person to unjail", } }, true, function(source, args)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 
