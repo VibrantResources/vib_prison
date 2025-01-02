@@ -1,6 +1,7 @@
 CreateThread(function()
+    local SentenceDurationLocation = Config.Prison.Locations.CheckSentenceDuration
     exports.ox_target:addSphereZone({
-        coords = vec3(Config.MainPrison.CheckSentenceDuration.x, Config.MainPrison.CheckSentenceDuration.y, Config.MainPrison.CheckSentenceDuration.z),
+        coords = vec3(SentenceDurationLocation.x, SentenceDurationLocation.y, SentenceDurationLocation.z),
         radius = 0.3,
         debug = Config.GenericStuff.Debug,
         options = {
@@ -14,8 +15,9 @@ CreateThread(function()
         },
     })
 
+    local inmateMenu = Config.Prison.Locations.InmateMenu
     exports.ox_target:addSphereZone({
-        coords = vec3(Config.MainPrison.InmateMenu.MenuLocation.x, Config.MainPrison.InmateMenu.MenuLocation.y, Config.MainPrison.InmateMenu.MenuLocation.z),
+        coords = vec3(inmateMenu.MenuLocation.x, inmateMenu.MenuLocation.y, inmateMenu.MenuLocation.z),
         radius = 0.5,
         debug = Config.GenericStuff.Debug,
         options = {

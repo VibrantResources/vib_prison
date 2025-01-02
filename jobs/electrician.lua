@@ -10,7 +10,7 @@ local working = false
 -----------
 
 CreateThread(function()
-    local electricianJob = Config.Jobs.Electrician
+    local electricianJob = Jobs.Electrician
     local pedModel = lib.requestModel(electricianJob.PedModel)
     
     local jobPed = CreatePed(1, pedModel, electricianJob.PedLocation, electricianJob.PedLocation.w, false, true)
@@ -72,8 +72,8 @@ function BeginElectricianWork()
     })
     working = true
 
-    local randomChoice = math.random(1, #Config.Jobs.Electrician.RepairLocations)
-    local randomLocation = Config.Jobs.Electrician.RepairLocations[randomChoice]
+    local randomChoice = math.random(1, #Jobs.Electrician.RepairLocations)
+    local randomLocation = Jobs.Electrician.RepairLocations[randomChoice]
 
     blip = AddBlipForCoord(randomLocation)
     SetBlipSprite (blip, 402)

@@ -4,7 +4,7 @@
 
 function SpawnHealthCheckPed(jailDuration) -- Ped that goes through confirmations when first entering prison with player
     local player = cache.ped
-    local healthCheck = Config.MainPrison.Enteringprison.ArrivalPed
+    local healthCheck = Config.Prison.Locations.Enteringprison.ArrivalPed
     local playerCoords = GetEntityCoords(player)
     local playerInfo = lib.callback.await('prison:server:GetPlayerInfo', false, player)
 

@@ -10,7 +10,7 @@ QBCore = exports["qb-core"]:GetCoreObject()
 
 RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, unJailed)
     local player = QBCore.Functions.GetPlayer(source)
-    -- local jailTime = player.Functions.GetMetaData('injail')
+    local jailTime = player.Functions.GetMetaData('injail')
     
     player.Functions.SetMetaData('injail', jailSentenceDuration)
 
@@ -20,6 +20,11 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
             ['@sentence_duration'] = jailSentenceDuration
         })
     else
+        if jailTime <= 0 then
+            print("First block check: jailTime reached 0: ", jailTime)
+            return
+        end
+
         local inmateItems = MySQL.Sync.fetchAll('SELECT inmate_items FROM vib_prison WHERE citizenid = ?', { 
             player.PlayerData.citizenid 
         })
@@ -35,6 +40,11 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
     end
 
     if jailSentenceDuration <= 0 then
+        if jailTime <= 0 then
+            print("Second block check: jailTime reached 0: ", jailTime)
+            return
+        end
+
         if unJailed then
             return
         end
@@ -49,6 +59,12 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
         MySQL.Async.execute('DELETE FROM `vib_prison` WHERE `citizenid` = @citizenid', {
             ['@citizenid'] = player.PlayerData.citizenid,
         })
+
+        if jailTime <= 0 then
+            print("Second block check: jailTime reached 0: ", jailTime)
+            return
+        end
+
         return
     end
 
@@ -65,7 +81,7 @@ RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, u
         })
     end
 
-    Wait(60000)
+    Wait(10000)
     TriggerClientEvent('prison:CreateSentenceDuration', player.PlayerData.source, (jailSentenceDuration -1))
 end)
 

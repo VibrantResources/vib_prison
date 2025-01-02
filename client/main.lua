@@ -83,8 +83,8 @@ RegisterNetEvent('prison:client:UnjailPlayer', function()
 		end
 
 		TriggerServerEvent('qb-clothes:loadPlayerSkin')
-		SetEntityCoords(player, Config.MainPrison.LeavingPrison, 0, 0, 0, false)
-		SetEntityHeading(player, Config.MainPrison.LeavingPrison.w)
+		SetEntityCoords(player, Config.Prison.Locations.LeavingPrison, 0, 0, 0, false)
+		SetEntityHeading(player, Config.Prison.Locations.LeavingPrison.w)
 		Wait(500)
 		DoScreenFadeIn(1000)
 	end
@@ -93,7 +93,7 @@ RegisterNetEvent('prison:client:UnjailPlayer', function()
 end)
 
 RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
-	local enteringPrison = Config.MainPrison.Enteringprison
+	local enteringPrison = Config.Prison.Locations.Enteringprison
 	local randomLocation = nil
 
 	DoScreenFadeOut(500)
@@ -123,7 +123,7 @@ RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 		DoScreenFadeIn(1000)
 
 		lib.alertDialog({
-			header = "You're still incarcerated",
+			header = "Incarcerated",
 			content = "You've still got "..jailDuration.." month/s left!\n\n"..
 			"Keep working hard to reduce your sentence ... or sit and sob in your cell... criminal!\n\nDon't forget your prison clothes!",
 			centered = true,
@@ -167,7 +167,7 @@ end)
 -------------
 
 function FreedomFromJail() -- Function that runs when checking time whilst remainingDuration <= 0
-	local leaving = Config.MainPrison.LeavingPrison
+	local leaving = Config.Prison.Locations.LeavingPrison
 
 	DoScreenFadeOut(500)
 	while not IsScreenFadedOut() do
