@@ -124,7 +124,6 @@ RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 
 	local playerGender = QBCore.Functions.GetPlayerData().charinfo.gender
 	if playerGender == 0 then
-
 		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Male)
 	else
 		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Female)
