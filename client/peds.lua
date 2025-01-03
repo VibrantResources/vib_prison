@@ -19,7 +19,7 @@ function SpawnHealthCheckPed(jailDuration) -- Ped that goes through confirmation
     TaskStartScenarioInPlace(arrivalPed, 'WORLD_HUMAN_CLIPBOARD', 0, true)
 
 	lib.alertDialog({
-		header = "Welcome to Boiling Broke Infirmary",
+		header = "Welcome to Boling Broke Infirmary",
 		content = "Hello "..playerInfo.charinfo.charname.."!\n\nSeems you've been locked up for "..jailDuration.." month/s. Now I know it doesn't look pretty but this is your new home so deal with it\n\n"..
 		"We've got to do a quick health check on you, so sit still and shut up!\n\nDon't forget your prison clothes!\n\n Oh don't be surprised that we also confiscated & destroyed anything illegal or that you won't be allowed now that you're a felon!",
 		centered = true,

@@ -2,7 +2,7 @@ CreateThread(function()
     local SentenceDurationLocation = Config.Prison.Locations.CheckSentenceDuration
     exports.ox_target:addSphereZone({
         coords = vec3(SentenceDurationLocation.x, SentenceDurationLocation.y, SentenceDurationLocation.z),
-        radius = 0.3,
+        radius = 0.5,
         debug = Config.GenericStuff.Debug,
         options = {
             {

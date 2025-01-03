@@ -1,6 +1,7 @@
 RegisterNetEvent('prison:server:ReturnPlayerItems', function(source, playerItems)
+    local player = QBCore.Functions.GetPlayer(source)
+
     for index, itemInfo in pairs(playerItems) do
-        print(json.encode(itemInfo, {indent = true}))
         if exports.ox_inventory:CanCarryItem(source, itemInfo.name, itemInfo.count) then
             exports.ox_inventory:AddItem(source, itemInfo.name, itemInfo.count, itemInfo.metadata)
         else

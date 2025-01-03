@@ -42,11 +42,3 @@ RegisterNetEvent('prison:server:ActionVisitation', function(data)
 
     TriggerClientEvent('prison:client:InmateGoToVisitationRoom', inmate.PlayerData.source, inmate.PlayerData.source, inmate)
 end)
-
--------------
---Callbacks--
--------------
-
-lib.callback.register('prison:server:GetVisitationRequests', function()
-    return visitationRequests
-end)

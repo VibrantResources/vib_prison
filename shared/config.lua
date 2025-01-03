@@ -24,9 +24,9 @@ Config.JobInformation = {
 
 Config.Prison = {
     Locations = {
-        CheckSentenceDuration = vector3(1769.06, 2571.02, 45.63),
+        CheckSentenceDuration = vector3(1628.37, 2564.31, 45.56),
         InmateMenu = {
-            MenuLocation = vector3(1841.82, 2578.84, 46.01),
+            MenuLocation = vector3(1631.06, 2564.46, 45.56),
         },
         Enteringprison = {
             EnterLocations = { -- Locations the player could spawn after being jailed

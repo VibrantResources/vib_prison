@@ -1,90 +1,5 @@
 QBCore = exports["qb-core"]:GetCoreObject()
 
--------------
---Variables--
--------------
-
-----------
---Events--
-----------
-
-RegisterNetEvent('prison:server:SetJailStatus', function(jailSentenceDuration, unJailed)
-    local player = QBCore.Functions.GetPlayer(source)
-    local jailTime = player.Functions.GetMetaData('injail')
-    
-    player.Functions.SetMetaData('injail', jailSentenceDuration)
-
-    if not unJailed then
-        MySQL.Async.execute('UPDATE `vib_prison` SET `sentence_duration` = @sentence_duration WHERE `citizenid` = @citizenid', {
-            ['@citizenid'] = player.PlayerData.citizenid,
-            ['@sentence_duration'] = jailSentenceDuration
-        })
-    else
-        if jailTime <= 0 then
-            print("First block check: jailTime reached 0: ", jailTime)
-            return
-        end
-
-        local inmateItems = MySQL.Sync.fetchAll('SELECT inmate_items FROM vib_prison WHERE citizenid = ?', { 
-            player.PlayerData.citizenid 
-        })
-
-        TriggerEvent('prison:server:ReturnPlayerItems', player.PlayerData.source, json.decode(inmateItems[1].inmate_items))
-
-        player.Functions.SetMetaData('injail', 0)
-
-        MySQL.Async.execute('DELETE FROM `vib_prison` WHERE `citizenid` = @citizenid', {
-            ['@citizenid'] = player.PlayerData.citizenid,
-        })
-        return
-    end
-
-    if jailSentenceDuration <= 0 then
-        if jailTime <= 0 then
-            print("Second block check: jailTime reached 0: ", jailTime)
-            return
-        end
-
-        if unJailed then
-            return
-        end
-
-        local inmateItems = MySQL.Sync.fetchAll('SELECT inmate_items FROM vib_prison WHERE citizenid = ?', { 
-            player.PlayerData.citizenid 
-        })
-
-        TriggerEvent('prison:server:ReturnPlayerItems', player.PlayerData.source, json.decode(inmateItems[1].inmate_items))
-        player.Functions.SetMetaData('injail', 0)
-        
-        MySQL.Async.execute('DELETE FROM `vib_prison` WHERE `citizenid` = @citizenid', {
-            ['@citizenid'] = player.PlayerData.citizenid,
-        })
-
-        if jailTime <= 0 then
-            print("Second block check: jailTime reached 0: ", jailTime)
-            return
-        end
-
-        return
-    end
-
-    if not player then
-        return
-    end
-
-    if player.PlayerData.job.name ~= 'unemployed' then
-        player.Functions.SetJob('unemployed')
-        lib.notify(source, {
-            title = 'Attention',
-            description = "You've been fired! Seek employment when you leave again!",
-            type = 'error'
-        })
-    end
-
-    Wait(10000)
-    TriggerClientEvent('prison:CreateSentenceDuration', player.PlayerData.source, (jailSentenceDuration -1))
-end)
-
 RegisterNetEvent('prison:server:JailPlayer', function(inputData)
     local copPlayer = GetPlayerPed(source)
     local targetPlayer = GetPlayerPed(inputData[1])
@@ -128,7 +43,7 @@ RegisterNetEvent('prison:server:JailPlayer', function(inputData)
         Wait(300)
     end
 
-    resolvedJailedPlayerItems = exports.ox_inventory:GetInventoryItems(inputData[1])
+    local resolvedJailedPlayerItems = exports.ox_inventory:GetInventoryItems(inputData[1])
 
     exports.ox_inventory:ClearInventory(inputData[1], false)
 
@@ -151,42 +66,3 @@ function CheckIfBlackListedItem(item)
         return false
     end
 end
-
--------------
---Callbacks--
--------------
-
-lib.callback.register('prison:server:GetPlayerInfo', function(player)
-    local playerInfo = QBCore.Functions.GetPlayer(player)
-
-    return playerInfo.PlayerData
-end)
-
-lib.callback.register('prison:server:GetPlayerByCitizenId', function(source, citizenId)
-    local playerData = nil
-
-    if QBCore.Functions.GetPlayerByCitizenId(citizenId) then
-        playerData = QBCore.Functions.GetPlayerByCitizenId(citizenId)
-    else
-        playerData = QBCore.Functions.GetOfflinePlayerByCitizenId(citizenId)
-    end
-
-    return playerData
-end)
-
-lib.callback.register('prison:CheckRemainingDuration', function()
-    local player = QBCore.Functions.GetPlayer(source)
-    local jailTime = player.Functions.GetMetaData('injail')
-
-    return jailTime
-end)
-
-lib.callback.register('prison:server:GetAllInmateData', function()
-    local inmateData = MySQL.Sync.fetchAll('SELECT * FROM `vib_prison`')
-    
-    return inmateData
-end)
-
------------
---Threads--
------------

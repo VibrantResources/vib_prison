@@ -94,20 +94,14 @@ end)
 
 RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 	local enteringPrison = Config.Prison.Locations.Enteringprison
-	local randomLocation = nil
+	local randomLocation = enteringPrison.EnterLocations[math.random(1, #enteringPrison.EnterLocations)]
 
 	DoScreenFadeOut(500)
 	while not IsScreenFadedOut() do
 		Wait(10)
 	end
-	
-	inJail = true
-
-	TriggerServerEvent("prison:server:SetJailStatus", jailDuration)
 
 	if not reloaded then
-		randomLocation = enteringPrison.EnterLocations[math.random(1, #enteringPrison.EnterLocations)]
-
 		SetEntityCoordsNoOffset(cache.ped, randomLocation.x, randomLocation.y, randomLocation.z, false, false, false, false)
 		SetEntityHeading(cache.ped, randomLocation.w)
 
@@ -115,8 +109,6 @@ RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 		FreezeEntityPosition(cache.ped, true)
 		SpawnHealthCheckPed(jailDuration)
 	else
-		randomLocation = enteringPrison.EnterLocations[math.random(1, #enteringPrison.EnterLocations)]
-
 		SetEntityCoordsNoOffset(cache.ped, randomLocation.x, randomLocation.y, randomLocation.z, false, false, false, false)
 		SetEntityHeading(cache.ped, randomLocation.w)
 
@@ -136,6 +128,10 @@ RegisterNetEvent('prison:client:Enter', function(jailDuration, reloaded)
 		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Male)
 	else
 		TriggerEvent('qb-clothing:client:loadOutfit', PrisonClothes.Female)
+	end
+
+	if not reloaded then
+		PrisonDurationTimer()
 	end
 end)
 
@@ -162,44 +158,6 @@ RegisterNetEvent('prison:CheckJailDuration', function()
 	end
 end)
 
--------------
---Functions--
--------------
-
-function FreedomFromJail() -- Function that runs when checking time whilst remainingDuration <= 0
-	local leaving = Config.Prison.Locations.LeavingPrison
-
-	DoScreenFadeOut(500)
-	while not IsScreenFadedOut() do
-		Wait(10)
-	end
-
-	Wait(1000)
-
-	SetEntityCoords(cache.ped, leaving.x, leaving.y, leaving.z)
-	SetEntityHeading(cache.ped, leaving.w)
-	Wait(500)
-
-	inJail = false
-
-	DoScreenFadeIn(1000)
-end
-
------------
---Threads--
------------
-
-RegisterNetEvent('prison:CreateSentenceDuration', function(jailSentenceDuration)
-	if jailSentenceDuration <= 0 and inJail then
-		lib.notify({
-			title = 'Attention',
-			description = "You're time's up! Head to the check out area to be free!",
-			type = 'success'
-		})
-	end
-	TriggerServerEvent("prison:server:SetJailStatus", jailSentenceDuration)
-end)
-
 -------------------------------
 --Player Load/Unload Controls--
 -------------------------------
@@ -209,9 +167,9 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
 		if PlayerData.metadata["injail"] > 0 then -- Send player back into jail, in a random location, if they logged off whilst they have a remaining duration
 			local reloaded = true
 
-			Wait(500)
-
 			TriggerEvent("prison:client:Enter", PlayerData.metadata["injail"], reloaded)
+
+			PrisonDurationTimer()
 		end
 	end)
 end)
