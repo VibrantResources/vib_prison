@@ -3,6 +3,7 @@ function PrisonDurationTimer()
 	
 	CreateThread(function()
 		while true do
+			print("1")
 			local remainingTime = lib.callback.await('prison:CheckRemainingDuration', source)
 	
 			if remainingTime <= 0 then
@@ -15,7 +16,7 @@ function PrisonDurationTimer()
 			end
 
 			Wait(10000) -- This needs to be set to 60000 when complete
-
+			print("2")
 			local newSentenceTime = (remainingTime - 1)
 			TriggerServerEvent('prison:server:UpdateRemainingSentence', newSentenceTime)
 		end
