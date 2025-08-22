@@ -1,11 +1,11 @@
 Config = Config or {}
 
 Config.CoreInfo = {
-    Debug = true,
+    Debug = false,
 }
 
 Config.GenericStuff = {
-    Debug = true,
+    Debug = false,
     Policejob = 'police',
     PoliceJobType = "leo",
 }
